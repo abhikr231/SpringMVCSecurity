@@ -1,4 +1,4 @@
-package com.websystique.springmvc.configuration;
+package com.damco.springmvc.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
