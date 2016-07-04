@@ -19,6 +19,7 @@ import com.damco.springmvc.converter.RoleToUserProfileConverter;
 
 
 @Configuration
+//@EnableAspectJAutoProxy
 @EnableWebMvc
 @ComponentScan(basePackages = "com.damco.springmvc")
 public class AppConfig extends WebMvcConfigurerAdapter{
@@ -77,5 +78,11 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     public void configurePathMatch(PathMatchConfigurer matcher) {
         matcher.setUseRegisteredSuffixPatternMatch(true);
     }
+    
+    
+    /*@Bean
+    public CrudAspect crudAspect() {
+        return new CrudAspect();
+    }*/
 }
 

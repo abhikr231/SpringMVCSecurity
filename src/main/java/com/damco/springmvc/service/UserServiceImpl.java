@@ -17,6 +17,12 @@ public class UserServiceImpl implements UserService{
 
 	@Autowired
 	private UserDao dao;
+	
+	@Autowired
+	private UserDao dao1;
+	
+	@Autowired(required = false)
+	private UserService userService;
 
 	@Autowired
     private PasswordEncoder passwordEncoder;
@@ -61,6 +67,14 @@ public class UserServiceImpl implements UserService{
 
 	public List<User> findAllUsers() {
 		return dao.findAllUsers();
+	}
+	
+	public List<User> findAllDbaUsers() {
+		return dao.findAllDbaUsers();
+	}
+	
+	public List<User> findAllUser() {
+		return dao1.findAllUser();
 	}
 
 	public boolean isUserSSOUnique(Integer id, String sso) {

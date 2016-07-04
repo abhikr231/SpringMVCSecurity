@@ -1,5 +1,6 @@
 package com.damco.springmvc.controller;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
@@ -55,15 +57,18 @@ public class AppController {
 	/**
 	 * This method will list all existing users.
 	 */
-	@RequestMapping(value = { "/", "/list" }, method = RequestMethod.GET)
-	public String listUsers(ModelMap model) {
+	 @RequestMapping(value = { "/", "/list" }, method = RequestMethod.GET)
+	    public String listUsers(ModelMap model) {
+	 
+	        List<User> users = userService.findAllUsers();
+	        model.addAttribute("users", users);
+	        model.addAttribute("loggedinuser", getPrincipal());
+	        return "userslist";
+	    }
 
-		List<User> users = userService.findAllUsers();
-		model.addAttribute("users", users);
-		model.addAttribute("loggedinuser", getPrincipal());
-		return "userslist";
-	}
+	
 
+	
 	/**
 	 * This method will provide the medium to add a new user.
 	 */
@@ -187,8 +192,32 @@ public class AppController {
 		if (isCurrentAuthenticationAnonymous()) {
 			return "login";
 	    } else {
-	    	return "redirect:/list";  
+	    	if(hasRole("ROLE_DBA")){
+	    		return "redirect:/dba/list";
+	    	}
+	    	else if(hasRole("ROLE_USER")){
+	    		return "redirect:/user/list";
+	    	}
+	    	else{
+	    	return "redirect:/list";
+	    	}
 	    }
+	}
+	@RequestMapping(value = "/homePage", method = RequestMethod.GET)
+	public String hamePage() {
+		if (isCurrentAuthenticationAnonymous()) {
+			return "login";
+		} else {
+			if(hasRole("ROLE_DBA")){
+				return "redirect:/dba/list";
+			}
+			else if(hasRole("ROLE_USER")){
+	    		return "redirect:/user/list";
+	    	}
+			else{
+				return "redirect:/list";
+			}
+		}
 	}
 
 	/**
@@ -229,5 +258,30 @@ public class AppController {
 	    return authenticationTrustResolver.isAnonymous(authentication);
 	}
 
+
+	private boolean hasRole(String role) {
+		  Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)
+		  SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		  boolean hasRole = false;
+		  for (GrantedAuthority authority : authorities) {
+		     hasRole = authority.getAuthority().equals(role);
+		     if (hasRole) {
+			  break;
+		     }
+		  }
+		  return hasRole;
+		}
+	private boolean getRole(String role) {
+		Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)
+				SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		boolean hasRole = false;
+		for (GrantedAuthority authority : authorities) {
+			hasRole = authority.getAuthority().equals(role);
+			if (hasRole) {
+				break;
+			}
+		}
+		return hasRole;
+	}
 
 }
